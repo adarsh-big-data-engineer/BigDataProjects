@@ -1,0 +1,57 @@
+CREATE SCHEMA gold
+
+CREATE VIEW gold.final
+AS
+SELECT
+     *
+FROM
+    OPENROWSET(
+        BULK 'https://olistfilestorageaccount.dfs.core.windows.net/olistdata/silver/',
+        FORMAT = 'PARQUET'
+    ) AS result1
+
+
+SELECT * FROM gold.final
+
+
+
+CREATE VIEW gold.final2
+AS
+SELECT
+     *
+FROM
+    OPENROWSET(
+        BULK 'https://olistfilestorageaccount.dfs.core.windows.net/olistdata/silver/',
+        FORMAT = 'PARQUET'
+    ) AS result2
+where order_status = 'delivered'
+
+SELECT * FROM gold.final2
+
+
+
+
+CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'HWhA@jCA3aRzaBt';
+CREATE DATABASE SCOPED CREDENTIAL adarshadmin WITH IDENTITY = 'Managed Identity';
+
+select * from sys.database_credentials
+
+CREATE EXTERNAL FILE FORMAT extfileformat WITH (
+    FORMAT_TYPE = PARQUET,
+    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'
+);
+
+CREATE EXTERNAL DATA SOURCE goldlayer WITH (
+    LOCATION = 'https://olistfilestorageaccount.dfs.core.windows.net/olistdata/gold/',
+    CREDENTIAL = adarshadmin
+);
+
+
+CREATE EXTERNAL TABLE gold.finaltable WITH (
+        LOCATION = 'FinalServing',
+        DATA_SOURCE = goldlayer,
+        FILE_FORMAT = extfileformat
+) AS
+SELECT * FROM gold.final2;
+
+select * from gold.finaltable

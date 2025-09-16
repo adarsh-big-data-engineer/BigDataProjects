@@ -1,0 +1,9 @@
+Dataset:
+https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
+
+Databases for mysql and mongoDB:
+https://filess.io
+
+
+Microsoft tutorial steps for CETAS:
+https://learn.microsoft.com/en-us/azure/synapse-analytics/sql/develop-tables-cetas
